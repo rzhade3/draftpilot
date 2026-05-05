@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DraftPilot</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Auth screen (shown when not signed in) -->
+    <div id="auth-screen" class="auth-screen">
+      <svg class="logo" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5">
+        <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+      </svg>
+      <h2>DraftPilot</h2>
+      <p>Sign in with Google to analyze your documents.</p>
+      <button id="btn-signin">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Sign in with Google
+      </button>
+    </div>
+
+    <!-- Main content (shown when signed in) -->
+    <div id="main-content" style="display:none;">
+      <!-- Header -->
+      <header id="header">
+        <div class="header-left">
+          <svg class="logo" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          <h1>DraftPilot</h1>
+        </div>
+        <button id="btn-analyze" title="Analyze document">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          Analyze
+        </button>
+      </header>
+
+      <!-- Connection status -->
+      <div id="status-bar">
+        <span id="status-dot"></span>
+        <span id="status-text">Checking server...</span>
+      </div>
+
+    <!-- Tabs -->
+    <nav id="tabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="suggestions">
+        Suggestions <span id="suggestion-count" class="badge">0</span>
+      </button>
+      <button class="tab" data-tab="chat">Chat</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </nav>
+
+    <!-- Overview Tab -->
+    <div id="tab-overview" class="tab-content active">
+      <div id="overview-content">
+        <!-- Publish readiness -->
+        <div id="publish-readiness" class="overview-card">
+          <div class="card-header">
+            <h3>Publish Readiness</h3>
+            <span id="publish-badge" class="publish-badge not-ready">Not Analyzed</span>
+          </div>
+          <p id="publish-summary" class="score-label">Analyze your document to check</p>
+        </div>
+
+        <!-- Tone -->
+        <div class="overview-card">
+          <h3>Tone</h3>
+          <p id="tone-detected" class="score-label">Analyze to detect tone</p>
+          <div class="tone-target-row">
+            <span class="tone-target-label">Target:</span>
+            <span id="tone-pill" class="tone-pill tone-pill-editable" title="Double-click to set target tone">None set</span>
+            <input type="text" id="tone-input" class="tone-inline-input" style="display:none;" placeholder="e.g. professional and formal">
+          </div>
+        </div>
+
+        <!-- Writing Quality -->
+        <div class="overview-card">
+          <h3>Writing Quality</h3>
+          <div id="wq-content" style="display:none;">
+            <div class="flesch-score-row">
+              <span id="wq-number" class="flesch-number">—</span>
+              <span id="wq-label" class="flesch-grade">—</span>
+            </div>
+            <div class="score-bar-container">
+              <div id="wq-bar" class="score-bar" style="width: 0%"></div>
+            </div>
+            <details id="wq-details" class="ai-details" style="display:none;">
+              <summary>Score breakdown</summary>
+              <div id="wq-breakdown" class="wq-breakdown"></div>
+            </details>
+          </div>
+          <p id="wq-empty" class="score-label">Analyze to calculate</p>
+        </div>
+
+        <!-- Flesch Reading Ease -->
+        <div class="overview-card">
+          <h3>Flesch Reading Ease</h3>
+          <div id="flesch-content" style="display:none;">
+            <div class="flesch-score-row">
+              <span id="flesch-number" class="flesch-number">—</span>
+              <span id="flesch-grade" class="flesch-grade">—</span>
+            </div>
+            <div class="score-bar-container">
+              <div id="flesch-bar" class="score-bar" style="width: 0%"></div>
+            </div>
+            <p id="flesch-detail" class="score-label">—</p>
+          </div>
+          <p id="flesch-empty" class="score-label">Analyze to calculate</p>
+        </div>
+
+        <!-- AI Detection -->
+        <div class="overview-card">
+          <h3>AI Detection</h3>
+          <div id="ai-detect-loading" style="display:none;" class="score-label">Analyzing...</div>
+          <div id="ai-detect-content" style="display:none;">
+            <div class="ai-score-row">
+              <span id="ai-score-number" class="flesch-number">—</span>
+              <span id="ai-score-label" class="flesch-grade">—</span>
+            </div>
+            <div class="score-bar-container">
+              <div id="ai-score-bar" class="score-bar" style="width: 0%"></div>
+            </div>
+            <details class="ai-details">
+              <summary>Details</summary>
+              <div id="ai-reasons" class="ai-reasons"></div>
+            </details>
+          </div>
+          <div id="ai-detect-empty" class="score-label">Analyze to check</div>
+        </div>
+
+        <!-- Fact Check -->
+        <div class="overview-card" id="fact-check-card">>
+          <div class="card-header-row">
+            <h3>Fact Check</h3>
+            <button id="btn-fact-extract" class="btn-sm" title="Extract factual claims">🔍 Extract Claims</button>
+          </div>
+          <div id="fact-check-loading" style="display:none;" class="score-label">Extracting factual claims...</div>
+          <div id="fact-check-content" style="display:none;">
+            <p id="fact-check-summary" class="score-label"></p>
+            <div id="fact-check-claims" class="fact-check-claims"></div>
+          </div>
+          <div id="fact-check-empty" class="score-label">Extract claims from your document, then verify them individually.</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="overview-card">
+          <h3>Issue Breakdown</h3>
+          <div id="issue-breakdown" class="issue-breakdown"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggestions Tab -->
+    <div id="tab-suggestions" class="tab-content">
+      <div id="suggestions-empty" class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <p>Click <strong>Analyze</strong> to check your document</p>
+      </div>
+      <div id="suggestions-list"></div>
+    </div>
+
+    <!-- Chat Tab -->
+    <div id="tab-chat" class="tab-content">
+      <div id="chat-messages">
+        <div class="chat-message assistant">
+          <p>Hi! I'm DraftPilot, your writing assistant. Ask me to help edit, rephrase, or improve your document. I can also answer questions about writing style and grammar.</p>
+        </div>
+      </div>
+      <div id="chat-input-container">
+        <textarea id="chat-input" placeholder="Ask me anything about your document..." rows="2"></textarea>
+        <button id="btn-send" title="Send message">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="tab-settings" class="tab-content">
+      <!-- Memory section -->
+      <div class="overview-card">
+        <h3>Memory</h3>
+        <p class="settings-desc">DraftPilot remembers your documents, past analyses, and writing preferences.</p>
+        <div id="memory-list" class="memory-list">
+          <p class="score-label">Loading...</p>
+        </div>
+        <div class="settings-actions">
+          <button id="btn-clear-doc-memory" class="btn-danger-secondary">Clear this doc's memory</button>
+          <button id="btn-clear-all-memory" class="btn-danger">Clear all memory</button>
+        </div>
+      </div>
+
+      <!-- About section -->
+      <div class="overview-card">
+        <h3>About</h3>
+        <p class="settings-desc">DraftPilot v1.1 · Powered by GitHub Copilot</p>
+      </div>
+    </div>
+    </div>
+    <!-- end main-content -->
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

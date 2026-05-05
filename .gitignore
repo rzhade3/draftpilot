@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+server/dist/
+
+# Database files
+server/draftpilot.db
+server/draftpilot.db-shm
+server/draftpilot.db-wal
+
+# Extension manifest (contains OAuth client_id)
+extension/manifest.json
+
+# Environment files
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

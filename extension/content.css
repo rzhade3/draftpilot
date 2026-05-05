@@ -1,0 +1,22 @@
+/* Minimal content script styles — highlight text with issues */
+.grammar-assistant-highlight {
+  background-color: rgba(255, 200, 50, 0.3);
+  border-bottom: 2px wavy #e6a800;
+  cursor: pointer;
+  position: relative;
+}
+
+.grammar-assistant-highlight.error {
+  border-bottom-color: #e53e3e;
+  background-color: rgba(229, 62, 62, 0.15);
+}
+
+.grammar-assistant-highlight.warning {
+  border-bottom-color: #dd6b20;
+  background-color: rgba(221, 107, 32, 0.15);
+}
+
+.grammar-assistant-highlight.info {
+  border-bottom-color: #3182ce;
+  background-color: rgba(49, 130, 206, 0.15);
+}
