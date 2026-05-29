@@ -25,6 +25,18 @@ import crypto from "crypto";
 const app = express();
 const PORT = process.env.PORT || 3847;
 
+// Request logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    console.log(
+      `${req.method} ${req.path} ${res.statusCode} ${duration}ms`
+    );
+  });
+  next();
+});
+
 // Only allow requests from the Chrome extension (chrome-extension:// origin)
 // Combined with 127.0.0.1 binding, this blocks LAN + cross-origin web attacks
 app.use(

@@ -878,11 +878,16 @@ btnSignin.addEventListener("click", async () => {
     if (result.authenticated) {
       showMainContent();
     } else {
+      const reason = result.error || "Unknown error";
+      console.error("[DraftPilot] Sign-in failed:", reason);
       btnSignin.textContent = "Sign in failed — try again";
+      btnSignin.title = reason;
       btnSignin.disabled = false;
     }
   } catch (err) {
+    console.error("[DraftPilot] Sign-in error:", err);
     btnSignin.textContent = "Sign in failed — try again";
+    btnSignin.title = err.message || "Unknown error";
     btnSignin.disabled = false;
   }
 });
